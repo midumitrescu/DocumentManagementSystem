@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UrlParser {
-    public static final String storagePath = "/storage/documents";
-    private static final String[] storageUrlAtoms = determineUrlAtoms(storagePath);
+    public static final String STORAGE_PATH = "/storage/documents";
+    private static final String[] storageUrlAtoms = determineUrlAtoms(STORAGE_PATH);
 
     public boolean hasDeepPath(String requestURL) {
         String[] requestUrlAtoms = determineUrlAtoms(requestURL);
@@ -18,7 +18,7 @@ public class UrlParser {
     }
 
     /**
-     * @return document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#storagePath}/{documentName}.
+     * @return document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#STORAGE_PATH}/{documentName}.
      * Empty string if context path does not coincide
      */
     public String findDocumentNamePathParameter(String requestURL) {
@@ -38,7 +38,6 @@ public class UrlParser {
                 }
             }
         }
-
         return "";
     }
 

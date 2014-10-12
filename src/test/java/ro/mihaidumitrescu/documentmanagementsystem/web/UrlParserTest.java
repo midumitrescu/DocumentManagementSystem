@@ -14,12 +14,12 @@ public class UrlParserTest {
 
     @Test
     public void testHasDeepPath_2() {
-        Assert.assertTrue(urlParser.hasDeepPath(UrlParser.storagePath + "/somelink"));
+        Assert.assertTrue(urlParser.hasDeepPath(UrlParser.STORAGE_PATH + "/somelink"));
     }
 
     @Test
     public void testHasDeepPath_3() {
-        Assert.assertTrue(urlParser.hasDeepPath(UrlParser.storagePath + "/somelink/followed/by/some/more"));
+        Assert.assertTrue(urlParser.hasDeepPath(UrlParser.STORAGE_PATH + "/somelink/followed/by/some/more"));
     }
 
     @Test
@@ -44,12 +44,12 @@ public class UrlParserTest {
 
     @Test
     public void testHasDeepPath_StorageUrl() {
-        Assert.assertFalse(urlParser.hasDeepPath(UrlParser.storagePath));
+        Assert.assertFalse(urlParser.hasDeepPath(UrlParser.STORAGE_PATH));
     }
 
     @Test
     public void testHasDeepPath_WithSlash() {
-        Assert.assertFalse(urlParser.hasDeepPath(UrlParser.storagePath + "/"));
+        Assert.assertFalse(urlParser.hasDeepPath(UrlParser.STORAGE_PATH + "/"));
     }
 
     @Test
@@ -94,12 +94,12 @@ public class UrlParserTest {
 
     @Test
     public void testFindDocumentNamePathParameter_fullPath() {
-        Assert.assertEquals("Full path ed documentName", "someName", urlParser.findDocumentNamePathParameter(UrlParser.storagePath + "/someName"));
+        Assert.assertEquals("Full path ed documentName", "someName", urlParser.findDocumentNamePathParameter(UrlParser.STORAGE_PATH + "/someName"));
     }
 
 
     @Test
     public void testFindDocumentNamePathParameter_fullPathWithSlashAtEnd() {
-        Assert.assertEquals("Full path ed documentName", "someName", urlParser.findDocumentNamePathParameter(UrlParser.storagePath + "/someName/"));
+        Assert.assertEquals("Full path ed documentName", "someName", urlParser.findDocumentNamePathParameter(UrlParser.STORAGE_PATH + "/someName/"));
     }
 }

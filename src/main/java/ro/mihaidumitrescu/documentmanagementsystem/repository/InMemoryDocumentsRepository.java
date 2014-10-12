@@ -16,12 +16,12 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
     INSTANCE;
 
     private final static Logger classLogger = LoggerFactory.getLogger(InMemoryDocumentsRepository.class);
-    public static final int initialRepositoryCapacity = 128;
+    public static final int INITIAL_REPOSITORY_CAPACITY = 128;
 
     private final Map<String, Document> internalRepository = synchronizedHashMap();
 
     private Map<String, Document> synchronizedHashMap() {
-        return new ConcurrentHashMap<String, Document>(initialRepositoryCapacity);
+        return new ConcurrentHashMap<String, Document>(INITIAL_REPOSITORY_CAPACITY);
     }
 
     @Override

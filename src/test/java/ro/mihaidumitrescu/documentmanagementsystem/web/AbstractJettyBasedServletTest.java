@@ -15,7 +15,7 @@ public abstract class AbstractJettyBasedServletTest {
     public static final String localhost = "http://localhost:";
 
     private static Server server;
-    protected static final int jettyRunningPort = 9999;
+    protected static final int JETTY_STARTUP_PORT = 9999;
 
     @BeforeClass
     public static void prepareJetty() {
@@ -25,7 +25,7 @@ public abstract class AbstractJettyBasedServletTest {
     private static void startUpJetty() {
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
-        connector.setPort(jettyRunningPort);
+        connector.setPort(JETTY_STARTUP_PORT);
         server.setStopAtShutdown(true);
         server.addConnector(connector);
 
@@ -33,13 +33,13 @@ public abstract class AbstractJettyBasedServletTest {
         ServletHolder servletHolder = new ServletHolder(DocumentManagementServlet.class);
         servletHolder.setInitOrder(0);
         servletHolder.setEnabled(true);
-        context.addServlet(servletHolder, UrlParser.storagePath + "/*");
+        context.addServlet(servletHolder, UrlParser.STORAGE_PATH + "/*");
         server.setHandler(context);
 
         try {
             server.start();
         } catch (Exception e) {
-            classLogger.error("Error while starting jetty on " + jettyRunningPort, e);
+            classLogger.error("Error while starting jetty on " + JETTY_STARTUP_PORT, e);
             closeJetty();
         }
     }
@@ -52,17 +52,17 @@ public abstract class AbstractJettyBasedServletTest {
     private static void closeJetty() {
         try {
             if(server == null) {
-                classLogger.warn("Close jetty on port " + jettyRunningPort + " was called, but server was already null");
+                classLogger.warn("Close jetty on port " + JETTY_STARTUP_PORT + " was called, but server was already null");
             } else {
                 server.stop();
-                classLogger.warn("Closed jetty on port " + jettyRunningPort);
+                classLogger.warn("Closed jetty on port " + JETTY_STARTUP_PORT);
             }
         } catch (Exception e) {
-            classLogger.error("Error while closing jetty on port "  + jettyRunningPort, e);
+            classLogger.error("Error while closing jetty on port "  + JETTY_STARTUP_PORT, e);
         }
     }
 
     protected static String localAppUrl() {
-        return localhost + AbstractJettyBasedServletTest.jettyRunningPort;
+        return localhost + AbstractJettyBasedServletTest.JETTY_STARTUP_PORT;
     }
 }

@@ -30,7 +30,7 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
 
     @BeforeClass
     public static void startJetty() {
-        executor = new DocumentManagementCommandExecutor(localAppUrl(), UrlParser.storagePath);
+        executor = new DocumentManagementCommandExecutor(localAppUrl(), UrlParser.STORAGE_PATH);
     }
 
     @AfterClass
