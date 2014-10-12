@@ -6,14 +6,7 @@ import ro.mihaidumitrescu.application.ApplicationSettings;
 
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Random;
-import java.util.UUID;
 
-/**
- * Created by Mihai Dumitrescu on 12.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public enum IdGenerator {
 
     INSTANCE;

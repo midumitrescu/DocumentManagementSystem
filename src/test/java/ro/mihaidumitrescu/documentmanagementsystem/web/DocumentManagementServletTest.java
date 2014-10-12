@@ -29,7 +29,7 @@ public class DocumentManagementServletTest {
     @Mock
     BodyReader bodyReader;
     @Mock
-    ContentCreator contentCreator;
+    ContentExtractor contentExtractor;
 
     @Mock
     HttpServletRequest request;
@@ -57,11 +57,11 @@ public class DocumentManagementServletTest {
 
          when(repository.create(binaryContent)).thenReturn(aDocument());
 
-         when(contentCreator.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
+         when(contentExtractor.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
 
          when(response.getWriter()).thenReturn(outputWriter);
          testTarget.setDocumentsRepository(repository);
-         testTarget.setContentCreator(contentCreator);
+         testTarget.setContentExtractor(contentExtractor);
      }
 
     private Document aDocument() {

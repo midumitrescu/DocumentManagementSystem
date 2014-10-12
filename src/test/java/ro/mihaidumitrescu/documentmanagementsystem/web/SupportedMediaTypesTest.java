@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 
-import static org.junit.Assert.*;
-
 public class SupportedMediaTypesTest {
 
     @Test

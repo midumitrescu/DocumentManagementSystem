@@ -5,7 +5,7 @@ import sun.misc.IOUtils;
 
 import java.io.*;
 
-public class TestStreamingUtils {
+public class StreamingUtils {
     private final String testFolderPrefix = "src" + File.separator + "test" + File.separator + "resources";
 
     public InputStream inputStreamForFile(String fileName) throws FileDoesNotExistException {

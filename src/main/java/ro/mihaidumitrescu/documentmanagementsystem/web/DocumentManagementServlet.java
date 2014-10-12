@@ -14,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ConcurrentModificationException;
-import java.util.UUID;
 
 public class DocumentManagementServlet extends HttpServlet {
     private final static Logger classLogger = LoggerFactory.getLogger(DocumentManagementServlet.class);
 
     private UrlParser parser;
     private Repository<Document> documentsRepository;
-    private ContentCreator contentCreator;
+    private ContentExtractor contentExtractor;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -73,7 +72,6 @@ public class DocumentManagementServlet extends HttpServlet {
             replyNotFound(response);
         } else {
             replyNoContent(response);
-            replyOK(response);
         }
     }
 
@@ -116,12 +114,11 @@ public class DocumentManagementServlet extends HttpServlet {
 
     private Document createNewDocument(HttpServletRequest servletRequest) {
         Content<?> content = extractContent(servletRequest);
-        Document newlyCreatedDocument = documentsRepository.create(content);
-        return newlyCreatedDocument;
+        return documentsRepository.create(content);
     }
 
     protected Content extractContent(HttpServletRequest servletRequest) {
-        return contentCreator.extract(servletRequest);
+        return contentExtractor.extract(servletRequest);
     }
 
     private void initDependencies() {
@@ -137,8 +134,8 @@ public class DocumentManagementServlet extends HttpServlet {
     }
 
     private void initContentCreator() {
-        if(contentCreator == null) {
-            setContentCreator(new RequestBasedContentCreator());
+        if(contentExtractor == null) {
+            setContentExtractor(new RequestBasedContentExtractor());
         }
     }
 
@@ -148,7 +145,7 @@ public class DocumentManagementServlet extends HttpServlet {
         }
     }
 
-    public void setDocumentsRepository(Repository documentsRepository) {
+    public void setDocumentsRepository(Repository<Document> documentsRepository) {
         this.documentsRepository = documentsRepository;
     }
 
@@ -156,8 +153,8 @@ public class DocumentManagementServlet extends HttpServlet {
         this.parser = parser;
     }
 
-    public void setContentCreator(ContentCreator contentCreator) {
-        this.contentCreator = contentCreator;
+    public void setContentExtractor(ContentExtractor contentExtractor) {
+        this.contentExtractor = contentExtractor;
     }
 
     private boolean emptyDocumentName(HttpServletResponse response, String documentName) {

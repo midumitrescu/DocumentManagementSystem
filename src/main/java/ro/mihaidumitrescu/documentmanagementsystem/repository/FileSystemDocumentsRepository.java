@@ -8,11 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Created by Mihai Dumitrescu on 12.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public class FileSystemDocumentsRepository implements Repository<Document> {
 
     private final static String repositoryName = "citrix";

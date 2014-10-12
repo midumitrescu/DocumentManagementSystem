@@ -5,14 +5,9 @@
 
     <display-name>DocumentManagementSystem</display-name>
 
-    <!-- The front controller of this Spring Web application, responsible for handling all application requests -->
     <servlet>
         <servlet-name>dmsServlet</servlet-name>
         <servlet-class>ro.mihaidumitrescu.documentmanagementsystem.web.DocumentManagementServlet</servlet-class>
-        <init-param>
-            <param-name>applicationMode</param-name>
-            <param-value>prod</param-value>
-        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>dmsServlet</servlet-name>

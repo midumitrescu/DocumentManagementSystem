@@ -11,11 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by Mihai Dumitrescu on 12.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public class BinaryContent extends AbstractContent<byte[]> {
     private final static Logger classLogger = LoggerFactory.getLogger(BinaryContent.class);
 
@@ -31,13 +26,7 @@ public class BinaryContent extends AbstractContent<byte[]> {
     public void writeContent(HttpServletResponse response) {
         try {
             response.setContentLength(content.length);
-//            response.setHeader("Transfer-Encoding", "chunked");
-//            response.setContentType("application/octet-stream");
-
             response.getOutputStream().write(content);
-
-
-//            new BufferedWriter(content).writeBuffered(response);
         } catch (IOException e) {
              new WriteExceptionHandler(e).handle(classLogger);
         }

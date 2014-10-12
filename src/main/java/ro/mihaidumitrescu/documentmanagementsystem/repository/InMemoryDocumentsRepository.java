@@ -10,11 +10,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Mihai Dumitrescu on 11.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     INSTANCE;

@@ -9,8 +9,8 @@ import ro.mihaidumitrescu.documentmanagementsystem.model.StringContent;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class RequestBasedContentCreator implements ContentCreator {
-    private final static Logger classLogger = LoggerFactory.getLogger(RequestBasedContentCreator.class);
+public class RequestBasedContentExtractor implements ContentExtractor {
+    private final static Logger classLogger = LoggerFactory.getLogger(RequestBasedContentExtractor.class);
 
     public Content extract(HttpServletRequest requestInfo) {
         SupportedMediaTypes detected = SupportedMediaTypes.detectMediaType(requestInfo);

@@ -4,6 +4,6 @@ import ro.mihaidumitrescu.documentmanagementsystem.model.Content;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface ContentCreator {
+public interface ContentExtractor {
     Content extract(HttpServletRequest requestInfo);
 }

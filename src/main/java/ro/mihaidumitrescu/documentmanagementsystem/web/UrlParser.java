@@ -5,11 +5,6 @@ import ro.mihaidumitrescu.general.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Mihai Dumitrescu on 11.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public class UrlParser {
     public static final String storagePath = "/storage/documents";
     private static final String[] storageUrlAtoms = determineUrlAtoms(storagePath);
@@ -23,8 +18,9 @@ public class UrlParser {
 
     }
 
-    /** @return document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#storagePath}/{documentName}.
-     * Empty string if links does not coincide
+    /**
+     * @return document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#storagePath}/{documentName}.
+     * Empty string if context path does not coincide
      */
     public String findDocumentNamePathParameter(String requestURL) {
         if (!StringUtils.hasText(requestURL)) {
@@ -85,13 +81,5 @@ public class UrlParser {
              }
        }
         return true;
-    }
-
-    private String eliminateStoragePath(String comparedValue) {
-        return comparedValue.substring(storagePath.length());
-    }
-
-    private boolean emptyOrSlash(String comparedValue) {
-        return !StringUtils.hasText(comparedValue) || "/".equals(comparedValue);
     }
 }

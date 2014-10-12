@@ -7,11 +7,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Created by Mihai Dumitrescu on 11.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public enum SupportedMediaTypes {
 
     Text("text/plain"),

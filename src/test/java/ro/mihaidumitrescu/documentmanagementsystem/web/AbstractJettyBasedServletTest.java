@@ -4,29 +4,25 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.mihaidumitrescu.application.ApplicationModes;
 
-import javax.servlet.Servlet;
-
-public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
+public abstract class AbstractJettyBasedServletTest {
     private final static Logger classLogger = LoggerFactory.getLogger(AbstractJettyBasedServletTest.class);
 
-    private Server server;
+    public static final String localhost = "http://localhost:";
+
+    private static Server server;
     protected static final int jettyRunningPort = 9999;
 
-    /** Return servlet class under test */
-    protected abstract Class<T> getTestedServlet();
-
-    @Before
-    public void prepareJetty() {
+    @BeforeClass
+    public static void prepareJetty() {
         startUpJetty();
     }
 
-    private void startUpJetty() {
+    private static void startUpJetty() {
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(jettyRunningPort);
@@ -34,8 +30,7 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
         server.addConnector(connector);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        ServletHolder servletHolder = new ServletHolder(getTestedServlet());
-        servletHolder.setInitParameter(ApplicationModes.configurationParameterName, ApplicationModes.TEST.name());
+        ServletHolder servletHolder = new ServletHolder(DocumentManagementServlet.class);
         servletHolder.setInitOrder(0);
         servletHolder.setEnabled(true);
         context.addServlet(servletHolder, UrlParser.storagePath + "/*");
@@ -49,12 +44,12 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
         }
     }
 
-    @After
-    public void alwaysCloseJetty() {
+    @AfterClass
+    public static void alwaysCloseJetty() {
         closeJetty();
     }
 
-    private void closeJetty() {
+    private static void closeJetty() {
         try {
             if(server == null) {
                 classLogger.warn("Close jetty on port " + jettyRunningPort + " was called, but server was already null");
@@ -67,7 +62,7 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
         }
     }
 
-    protected int jettyRunningPort() {
-        return jettyRunningPort;
+    protected static String localAppUrl() {
+        return localhost + AbstractJettyBasedServletTest.jettyRunningPort;
     }
 }
