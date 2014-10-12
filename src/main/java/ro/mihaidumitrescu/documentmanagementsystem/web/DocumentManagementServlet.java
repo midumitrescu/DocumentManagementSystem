@@ -65,7 +65,7 @@ public class DocumentManagementServlet extends HttpServlet {
         Document newDocument = createNewDocument(request);
         replyCreated(response);
         response.setCharacterEncoding("us-ascii");
-        response.setContentType(SupportedMediaTypes.Text.produces());
+        response.setContentType(SupportedMediaTypes.TEXT.produces());
         response.getWriter().write(newDocument.getName());
     }
 

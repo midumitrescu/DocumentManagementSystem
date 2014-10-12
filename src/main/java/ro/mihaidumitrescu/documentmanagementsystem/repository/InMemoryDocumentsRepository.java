@@ -49,7 +49,7 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     @Override
     public Document delete(Document item) {
-        if(item == null) {
+        if (item == null) {
             return null;
         }
         return delete(item.getName());
@@ -57,14 +57,14 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     @Override
     public void update(Document item) {
-        if(item == null) {
+        if (item == null) {
             return;
         }
         synchronized (item.getName()) {
-            if(!exists(item)) {
+            if (!exists(item)) {
                 throw new ConcurrentModificationException("Document " + item + " cannot be updated, as it was deleted previously");
             }
-           internalRepository.put(item.getName(), item);
+            internalRepository.put(item.getName(), item);
         }
 
         onRepositoryChange();
@@ -82,16 +82,16 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     @Override
     public Document delete(String documentName) {
-         if(!StringUtils.hasText(documentName)) {
-             return null;
-         }
+        if (!StringUtils.hasText(documentName)) {
+            return null;
+        }
         Document removed = internalRepository.remove(documentName);
         onRepositoryChange();
         return removed;
     }
 
     private void onRepositoryChange() {
-        if(classLogger.isDebugEnabled()) {
+        if (classLogger.isDebugEnabled()) {
             classLogger.debug("Repository Content " + internalRepository);
         }
     }

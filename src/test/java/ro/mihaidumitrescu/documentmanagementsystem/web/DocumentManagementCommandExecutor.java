@@ -26,7 +26,7 @@ public class DocumentManagementCommandExecutor {
         documentsPath = client.target(localAppUrl).path(path);
     }
 
-    public Response createStringDocument(String content)  {
+    public Response createStringDocument(String content) {
         return documentsPath.request(MediaType.TEXT_PLAIN).post(Entity.entity(content, MediaType.TEXT_PLAIN));
     }
 
@@ -34,22 +34,22 @@ public class DocumentManagementCommandExecutor {
         return post.readEntity(String.class);
     }
 
-    public Response createDocument(String localFile)  {
+    public Response createDocument(String localFile) {
         InputStream fileOnDisk = new StreamingUtils().inputStreamForFile(localFile);
         return documentsPath.request(MediaType.APPLICATION_OCTET_STREAM).post(Entity.entity(fileOnDisk, MediaType.APPLICATION_OCTET_STREAM_TYPE));
     }
 
-    public Response updateDocument(String documentName, String localFile)  {
+    public Response updateDocument(String documentName, String localFile) {
         InputStream fileOnDisk = new StreamingUtils().inputStreamForFile(localFile);
         return updateDocument(documentName, fileOnDisk, MediaType.APPLICATION_OCTET_STREAM);
     }
 
-    public Response updateStringDocument(String documentName, String content)  {
+    public Response updateStringDocument(String documentName, String content) {
         InputStream streamedContent = new ByteArrayInputStream(content.getBytes());
         return updateDocument(documentName, streamedContent, MediaType.TEXT_PLAIN);
     }
 
-    public Response updateDocument(String documentName, InputStream stream, String mediaType)  {
+    public Response updateDocument(String documentName, InputStream stream, String mediaType) {
         return documentsPath.path(documentName).request(mediaType).put(Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM_TYPE));
     }
 
@@ -61,12 +61,12 @@ public class DocumentManagementCommandExecutor {
         return documentsPath.path(documentName).request("text/plain").get();
     }
 
-    public Entity<InputStream> entityFromFile(String fileName)  {
+    public Entity<InputStream> entityFromFile(String fileName) {
         InputStream testFile1 = new StreamingUtils().inputStreamForFile(fileName);
         return Entity.entity(testFile1, MediaType.APPLICATION_OCTET_STREAM_TYPE);
     }
 
-    public InputStream getInputStreamPerReflection(Content content)   {
+    public InputStream getInputStreamPerReflection(Content content) {
         Method getContentMethod;
         try {
             getContentMethod = AbstractContent.class.getDeclaredMethod("streamContent");

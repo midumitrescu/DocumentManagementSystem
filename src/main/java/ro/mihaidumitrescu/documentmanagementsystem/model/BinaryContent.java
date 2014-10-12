@@ -29,7 +29,7 @@ public class BinaryContent extends AbstractContent<byte[]> {
             response.setContentLength(content.length);
             response.getOutputStream().write(content);
         } catch (IOException e) {
-             new WriteExceptionHandler(e).handle(classLogger);
+            new WriteExceptionHandler(e).handle(classLogger);
         }
     }
 

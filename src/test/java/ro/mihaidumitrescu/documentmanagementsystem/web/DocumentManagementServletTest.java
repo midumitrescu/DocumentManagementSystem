@@ -49,27 +49,27 @@ public class DocumentManagementServletTest {
 
     private DocumentManagementServlet testTarget;
 
-     @Before
-     public void prepare() throws IOException, ServletException {
-         testTarget = new DocumentManagementServlet();
-         testTarget.init(config);
+    @Before
+    public void prepare() throws IOException, ServletException {
+        testTarget = new DocumentManagementServlet();
+        testTarget.init(config);
 
-         when(repository.exists("a")).thenReturn(true);
-         when(repository.exists("b")).thenReturn(false);
+        when(repository.exists("a")).thenReturn(true);
+        when(repository.exists("b")).thenReturn(false);
 
-         when(repository.read("a")).thenReturn(aDocument());
-         when(repository.read("b")).thenReturn(null);
+        when(repository.read("a")).thenReturn(aDocument());
+        when(repository.read("b")).thenReturn(null);
 
-         when(repository.delete("a")).thenReturn(aDocument());
-         when(repository.delete("b")).thenReturn(null);
+        when(repository.delete("a")).thenReturn(aDocument());
+        when(repository.delete("b")).thenReturn(null);
 
-         when(repository.create(binaryContent)).thenReturn(aDocument());
-         when(contentExtractor.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
+        when(repository.create(binaryContent)).thenReturn(aDocument());
+        when(contentExtractor.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
 
-         when(response.getWriter()).thenReturn(outputWriter);
-         testTarget.setDocumentsRepository(repository);
-         testTarget.setContentExtractor(contentExtractor);
-     }
+        when(response.getWriter()).thenReturn(outputWriter);
+        testTarget.setDocumentsRepository(repository);
+        testTarget.setContentExtractor(contentExtractor);
+    }
 
     private Document aDocument() {
         return new Document("a", binaryContent);
@@ -92,7 +92,7 @@ public class DocumentManagementServletTest {
     }
 
     @Test
-     public void testDoDelete_A() throws Exception {
+    public void testDoDelete_A() throws Exception {
         mockCallOnA();
         testTarget.doDelete(request, response);
         verify(repository).delete("a");
@@ -114,7 +114,7 @@ public class DocumentManagementServletTest {
     }
 
     @Test
-     public void testDoPut_B() throws Exception {
+    public void testDoPut_B() throws Exception {
         mockCallOnB();
         testTarget.doPut(request, response);
         verifyNotFound();

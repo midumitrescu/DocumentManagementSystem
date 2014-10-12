@@ -17,11 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static ro.mihaidumitrescu.application.ApplicationSettings.DOCUMENT_NAME__DEFAULT_LENGTH;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.mediumTestFile;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.smallTestFile;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile1;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile2;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile3;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.TEST_MEDIUM_FILE;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.TEST_SMALL_FILE;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.TEST_FILE1;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.TEST_JPG1;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.TEST_JPG2;
 
 public class DocumentManagementServletIntegrationTest extends AbstractJettyBasedServletTest {
 
@@ -67,22 +67,22 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
 
     @Test
     public void testGet_LargeFile1() throws IOException {
-        testSaveAndRead(testFile2);
+        testSaveAndRead(TEST_JPG1);
     }
 
     @Test
     public void testGet_LargeFile2() throws IOException {
-        testSaveAndRead(testFile3);
+        testSaveAndRead(TEST_JPG2);
     }
 
     @Test
     public void testDoGetAfterCreation_SmallFile() throws IOException {
-        testSaveAndRead(smallTestFile);
+        testSaveAndRead(TEST_SMALL_FILE);
     }
 
     @Test
     public void testDoGetAfterCreation_MediumFile() throws IOException {
-        testSaveAndRead(mediumTestFile);
+        testSaveAndRead(TEST_MEDIUM_FILE);
     }
 
     private void testSaveAndRead(String smallTestFile1) throws IOException {
@@ -95,22 +95,22 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
 
     @Test
     public void testCreateDocument_Successfully_file1() throws IOException {
-        testCreationFor(testFile1);
+        testCreationFor(TEST_FILE1);
     }
 
     @Test
     public void testCreateDocument_Successfully_file2() throws IOException {
-        testCreationFor(testFile2);
+        testCreationFor(TEST_JPG1);
     }
 
     @Test
     public void testCreateDocument_Successfully_file3() throws IOException {
-        testCreationFor(testFile3);
+        testCreationFor(TEST_JPG2);
     }
 
     @Test
     public void testCreateDocument_Successfully_smallPng() throws IOException {
-        testCreationFor(smallTestFile);
+        testCreationFor(TEST_SMALL_FILE);
     }
 
     private void testCreationFor(String testedFile) throws IOException {
@@ -124,8 +124,8 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
     }
 
     @Test
-    public void testPostMapping_UnexpectedAtoms()  {
-        Entity<InputStream> fileEntity = executor.entityFromFile(testFile1);
+    public void testPostMapping_UnexpectedAtoms() {
+        Entity<InputStream> fileEntity = executor.entityFromFile(TEST_FILE1);
         Response post = executor.path("somethingExtra").request(MediaType.APPLICATION_OCTET_STREAM).post(fileEntity);
         Assert.assertEquals("Unconfigured storage path, post should not be accepted", 405, post.getStatus());
     }
@@ -145,21 +145,21 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
 
     @Test
     public void test404WhenDocumentDoesNotExist_Put() {
-        Entity<InputStream> entity = executor.entityFromFile(testFile1);
+        Entity<InputStream> entity = executor.entityFromFile(TEST_FILE1);
         Response response = executor.path("aDocumentName").request(MediaType.TEXT_PLAIN).put(entity);
         Assert.assertEquals("Document does not exist", 404, response.getStatus());
     }
 
     @Test
     public void testPut_validUpdateSequence() {
-        Response createCommand = executor.createDocument(testFile1);
+        Response createCommand = executor.createDocument(TEST_FILE1);
         String documentName = executor.findCreatedDocumentName(createCommand);
 
-        testUpdate(documentName, testFile1);
-        testUpdate(documentName, testFile2);
-        testUpdate(documentName, testFile3);
-        testUpdate(documentName, smallTestFile);
-        testUpdate(documentName, mediumTestFile);
+        testUpdate(documentName, TEST_FILE1);
+        testUpdate(documentName, TEST_JPG1);
+        testUpdate(documentName, TEST_JPG2);
+        testUpdate(documentName, TEST_SMALL_FILE);
+        testUpdate(documentName, TEST_MEDIUM_FILE);
     }
 
     private void testUpdate(String documentName, String fileOnDisk) {
@@ -183,7 +183,7 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
         assertContentsEqual(message, fileOnDisk, content);
     }
 
-    private void assertContentsEqual(String message, String fileOnDisk, InputStream stream)  {
+    private void assertContentsEqual(String message, String fileOnDisk, InputStream stream) {
         Assert.assertArrayEquals(message, fileSystemUtils.readFully(fileOnDisk), fileSystemUtils.readFully(stream));
     }
 }

@@ -21,7 +21,7 @@ public enum IdGenerator {
     }
 
     public String next() {
-         return nextId(ApplicationSettings.DOCUMENT_NAME__DEFAULT_LENGTH);
+        return nextId(ApplicationSettings.DOCUMENT_NAME__DEFAULT_LENGTH);
     }
 
     public String nextFreeRandom(Collection<String> toBeAvoided) {
@@ -35,7 +35,7 @@ public enum IdGenerator {
 
     private String nextId(int ofSize) {
         StringBuilder result = new StringBuilder();
-        for(int i = 0; i < ofSize; i++) {
+        for (int i = 0; i < ofSize; i++) {
             int currentRandomCursorPosition = randomGenerator.nextInt(acceptedChars.length);
             result.append(acceptedChars[currentRandomCursorPosition]);
         }
@@ -45,7 +45,7 @@ public enum IdGenerator {
     }
 
     private void logCreation(String nextRandom) {
-        if(classLogger.isDebugEnabled()) {
+        if (classLogger.isDebugEnabled()) {
             classLogger.debug("Created next id of size " + nextRandom.length() + " with value " + nextRandom);
         }
     }

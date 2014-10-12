@@ -21,5 +21,4 @@ public class JaxRsUtils {
             classLogger.error("Error while jax-rs client", e);
         }
     }
-
 }

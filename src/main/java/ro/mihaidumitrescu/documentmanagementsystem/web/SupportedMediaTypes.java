@@ -9,8 +9,8 @@ import java.util.TreeSet;
 
 public enum SupportedMediaTypes {
 
-    Text("text/plain"),
-    Binary("application/octet-stream");
+    TEXT("text/plain"),
+    BINARY("application/octet-stream");
 
     private final Set<String> acceptedNamed;
     private final String produces;
@@ -21,18 +21,18 @@ public enum SupportedMediaTypes {
         acceptedNamed.addAll(Arrays.asList(headerAcceptedValues));
     }
 
-    public String produces() {
-        return produces;
-    }
-
     SupportedMediaTypes(String singleHeaderValue) {
         this.produces = singleHeaderValue;
         acceptedNamed = new TreeSet<String>();
         acceptedNamed.add(singleHeaderValue);
     }
 
+    public String produces() {
+        return produces;
+    }
+
     public static SupportedMediaTypes fromHeaderValue(String value) {
-        if(StringUtils.hasText(value)) {
+        if (StringUtils.hasText(value)) {
             for (SupportedMediaTypes mediaType : values()) {
                 if (mediaType.supports(value)) {
                     return mediaType;
@@ -51,6 +51,6 @@ public enum SupportedMediaTypes {
     }
 
     private static SupportedMediaTypes defaultMediaType() {
-        return Binary;
+        return BINARY;
     }
 }

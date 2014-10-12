@@ -15,7 +15,6 @@ public class UrlParser {
             return false;
         }
         return (requestUrlAtoms.length != storageUrlAtoms.length || !validFirstAtoms(requestUrlAtoms));
-
     }
 
     /**
@@ -45,7 +44,7 @@ public class UrlParser {
 
     private static String[] determineUrlAtoms(String requestURL) {
         String[] emptyStringArray = new String[0];
-        if(!StringUtils.hasText(requestURL)) {
+        if (!StringUtils.hasText(requestURL)) {
             return emptyStringArray;
         }
         String[] initialSplit = requestURL.split("/");
@@ -56,8 +55,8 @@ public class UrlParser {
 
     private static List<String> getOnlyNonEmptyAtoms(String[] initialSplit) {
         List<String> result = new ArrayList<String>(initialSplit.length);
-        for(String currentAtom : initialSplit) {
-            if(StringUtils.hasText(currentAtom)) {
+        for (String currentAtom : initialSplit) {
+            if (StringUtils.hasText(currentAtom)) {
                 result.add(currentAtom);
             }
         }
@@ -73,13 +72,13 @@ public class UrlParser {
     }
 
     private boolean validFirstAtoms(String[] parsedRequest) {
-       for(int i = 0; i < storageUrlAtoms.length; i++) {
-           String standard = storageUrlAtoms[i];
-           String value = parsedRequest[i];
-           if(!standard.equalsIgnoreCase(value)) {
-                 return false;
-             }
-       }
+        for (int i = 0; i < storageUrlAtoms.length; i++) {
+            String standard = storageUrlAtoms[i];
+            String value = parsedRequest[i];
+            if (!standard.equalsIgnoreCase(value)) {
+                return false;
+            }
+        }
         return true;
     }
 }

@@ -10,18 +10,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 public class StreamingUtils {
     private final String testFolderPrefix = "src" + File.separator + "test" + File.separator + "resources";
 
     public InputStream inputStreamForFile(String fileName) throws FileDoesNotExistException {
         String fileReference = ensureSeparatorAtBeginning(fileName);
-        if(!fileReference.contains(testFolderPrefix)) {
+        if (!fileReference.contains(testFolderPrefix)) {
             fileReference = testFolderPrefix + fileReference;
         }
 
         File desiredFile = new File(fileReference);
-        if(!desiredFile.exists()) {
+        if (!desiredFile.exists()) {
             throw new FileDoesNotExistException("File with final reference " + fileReference + " does not exist");
         }
         try {
@@ -39,7 +38,7 @@ public class StreamingUtils {
         }
     }
 
-    public byte[] readFully(InputStream stream)  {
+    public byte[] readFully(InputStream stream) {
         try {
             return IOUtils.readFully(stream, Integer.MAX_VALUE, true);
         } catch (IOException e) {
@@ -48,7 +47,7 @@ public class StreamingUtils {
     }
 
     private String ensureSeparatorAtBeginning(String fileName) {
-        if(!fileName.startsWith(File.separator)) {
+        if (!fileName.startsWith(File.separator)) {
             return File.separator + fileName;
         }
         return fileName;

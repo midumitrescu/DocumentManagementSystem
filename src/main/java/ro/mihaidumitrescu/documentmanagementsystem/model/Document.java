@@ -1,6 +1,7 @@
 package ro.mihaidumitrescu.documentmanagementsystem.model;
 
 public class Document {
+
     private final String name;
     private final Content content;
     private final long creationTime;

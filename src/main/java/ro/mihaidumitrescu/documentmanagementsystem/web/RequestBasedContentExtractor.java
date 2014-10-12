@@ -16,16 +16,16 @@ public class RequestBasedContentExtractor implements ContentExtractor {
         SupportedMediaTypes detected = SupportedMediaTypes.detectMediaType(requestInfo);
         logMediaTypeDetection(detected, requestInfo);
 
-        if(SupportedMediaTypes.Binary == detected) {
+        if (SupportedMediaTypes.BINARY == detected) {
             return new BinaryContent(requestInfo);
-        } else if(SupportedMediaTypes.Text == detected) {
+        } else if (SupportedMediaTypes.TEXT == detected) {
             return new StringContent(requestInfo);
         }
         throw new MediaTypeNotSupportedException(detected);
     }
 
     private void logMediaTypeDetection(SupportedMediaTypes detected, HttpServletRequest requestInfo) {
-        if(classLogger.isDebugEnabled()) {
+        if (classLogger.isDebugEnabled()) {
             classLogger.debug("For request " + requestInfo + ", creating content type of type " + detected);
         }
     }

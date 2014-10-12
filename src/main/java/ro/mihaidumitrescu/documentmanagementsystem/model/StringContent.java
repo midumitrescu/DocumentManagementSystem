@@ -26,13 +26,13 @@ public class StringContent extends AbstractContent<String> {
         try {
             response.getWriter().write(content);
         } catch (IOException e) {
-             new WriteExceptionHandler(e).handle(classLogger);
+            new WriteExceptionHandler(e).handle(classLogger);
         }
     }
 
     @Override
     protected InputStream getContent() {
-        return  new ByteArrayInputStream(content.getBytes());
+        return new ByteArrayInputStream(content.getBytes());
     }
 
     @Override
