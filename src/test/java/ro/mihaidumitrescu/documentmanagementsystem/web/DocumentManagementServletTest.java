@@ -27,25 +27,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementServletTest {
 
-    @Mock
-    Repository<Document> repository;
-    @Mock
-    BinaryContent binaryContent;
-    @Mock
-    BodyReader bodyReader;
-    @Mock
-    ContentExtractor contentExtractor;
+    @Mock Repository<Document> repository;
+    @Mock BinaryContent binaryContent;
+    @Mock BodyReader bodyReader;
+    @Mock ContentExtractor contentExtractor;
 
-    @Mock
-    HttpServletRequest request;
-    @Mock
-    HttpServletResponse response;
-    @Mock
-    ServletConfig config;
-    @Mock
-    ServletInputStream servletInputStream;
-    @Mock
-    PrintWriter outputWriter;
+    @Mock HttpServletRequest request;
+    @Mock HttpServletResponse response;
+    @Mock ServletConfig config;
+    @Mock ServletInputStream servletInputStream;
+    @Mock PrintWriter outputWriter;
 
     private DocumentManagementServlet testTarget;
 
