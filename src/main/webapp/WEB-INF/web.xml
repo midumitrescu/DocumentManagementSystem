@@ -8,7 +8,7 @@
     <!-- The front controller of this Spring Web application, responsible for handling all application requests -->
     <servlet>
         <servlet-name>dmsServlet</servlet-name>
-        <servlet-class>ro.mihaidumitrescu.web.DocumentManagementServlet</servlet-class>
+        <servlet-class>ro.mihaidumitrescu.documentmanagementsystem.web.DocumentManagementServlet</servlet-class>
         <init-param>
             <param-name>applicationMode</param-name>
             <param-value>prod</param-value>
@@ -16,6 +16,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>dmsServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/storage/documents*</url-pattern>
     </servlet-mapping>
 </web-app>

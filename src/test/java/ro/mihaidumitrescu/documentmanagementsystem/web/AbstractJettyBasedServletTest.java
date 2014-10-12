@@ -1,4 +1,4 @@
-package ro.mihaidumitrescu.web;
+package ro.mihaidumitrescu.documentmanagementsystem.web;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -16,7 +16,7 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
     private final static Logger classLogger = LoggerFactory.getLogger(AbstractJettyBasedServletTest.class);
 
     private Server server;
-    private final int jettyRunningPort = 9999;
+    protected static final int jettyRunningPort = 9999;
 
     /** Return servlet class under test */
     protected abstract Class<T> getTestedServlet();
@@ -38,7 +38,7 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
         servletHolder.setInitParameter(ApplicationModes.configurationParameterName, ApplicationModes.TEST.name());
         servletHolder.setInitOrder(0);
         servletHolder.setEnabled(true);
-        context.addServlet(servletHolder, "/*");
+        context.addServlet(servletHolder, UrlParser.storagePath);
         server.setHandler(context);
 
         try {
