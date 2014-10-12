@@ -112,6 +112,7 @@
                     <path>/</path>
                     <warDirectory>${project.build.directory}/${artifactId}</warDirectory>
                     <uriEncoding>UTF-8</uriEncoding>
+                    <port>8888</port>
                 </configuration>
             </plugin>
 
