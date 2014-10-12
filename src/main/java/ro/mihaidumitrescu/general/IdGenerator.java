@@ -21,7 +21,7 @@ public enum IdGenerator {
     }
 
     public String next() {
-         return nextId(ApplicationSettings.documentNameLength);
+         return nextId(ApplicationSettings.DOCUMENT_NAME__DEFAULT_LENGTH);
     }
 
     public String nextFreeRandom(Collection<String> toBeAvoided) {

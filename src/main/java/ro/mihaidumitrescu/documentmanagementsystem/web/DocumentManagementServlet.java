@@ -8,6 +8,7 @@ import ro.mihaidumitrescu.documentmanagementsystem.repository.InMemoryDocumentsR
 import ro.mihaidumitrescu.documentmanagementsystem.repository.Repository;
 import ro.mihaidumitrescu.general.StringUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +24,22 @@ public class DocumentManagementServlet extends HttpServlet {
     private ContentExtractor contentExtractor;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         initDependencies();
-        logMethodEntry("GET", request);
+    }
 
+    private void initDependencies() {
+        logStartInit();
+        setParser(new UrlParser());
+        setDocumentsRepository(InMemoryDocumentsRepository.INSTANCE);
+        setContentExtractor(new RequestBasedContentExtractor());
+        logEndInit();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logMethodEntry("GET", request);
         String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
         if(emptyDocumentName(response, documentName)) {
             return;
@@ -43,14 +56,13 @@ public class DocumentManagementServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initDependencies();
         logMethodEntry("POST", request);
         if(parser.hasDeepPath(request.getRequestURI())) {
             replyNotAcceptable(response);
             return;
         }
-        Document newDocument = createNewDocument(request);
 
+        Document newDocument = createNewDocument(request);
         replyCreated(response);
         response.setCharacterEncoding("us-ascii");
         response.setContentType(SupportedMediaTypes.Text.produces());
@@ -59,9 +71,7 @@ public class DocumentManagementServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initDependencies();
         logMethodEntry("DELETE", request);
-
         String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
         if(emptyDocumentName(response, documentName)) {
             return;
@@ -77,9 +87,7 @@ public class DocumentManagementServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initDependencies();
         logMethodEntry("PUT", request);
-
         String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
         if(emptyDocumentName(response, documentName)) {
             return;
@@ -108,6 +116,14 @@ public class DocumentManagementServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_CREATED);
     }
 
+    private void replyNotFound(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    private void replyNotAcceptable(HttpServletResponse resp) {
+        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+    }
+
     private void replyNoContent(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
@@ -121,42 +137,6 @@ public class DocumentManagementServlet extends HttpServlet {
         return contentExtractor.extract(servletRequest);
     }
 
-    private void initDependencies() {
-        initParser();
-        initDocumentRepository();
-        initContentCreator();
-    }
-
-    private void initDocumentRepository() {
-        if(documentsRepository == null) {
-            setDocumentsRepository(InMemoryDocumentsRepository.INSTANCE);
-        }
-    }
-
-    private void initContentCreator() {
-        if(contentExtractor == null) {
-            setContentExtractor(new RequestBasedContentExtractor());
-        }
-    }
-
-    private void initParser() {
-        if (this.parser == null) {
-            setParser(new UrlParser());
-        }
-    }
-
-    public void setDocumentsRepository(Repository<Document> documentsRepository) {
-        this.documentsRepository = documentsRepository;
-    }
-
-    public void setParser(UrlParser parser) {
-        this.parser = parser;
-    }
-
-    public void setContentExtractor(ContentExtractor contentExtractor) {
-        this.contentExtractor = contentExtractor;
-    }
-
     private boolean emptyDocumentName(HttpServletResponse response, String documentName) {
         if(!StringUtils.hasText(documentName)) {
             replyNotAcceptable(response);
@@ -165,17 +145,33 @@ public class DocumentManagementServlet extends HttpServlet {
         return false;
     }
 
+    public void setParser(UrlParser parser) {
+        this.parser = parser;
+    }
+
+    public void setDocumentsRepository(Repository<Document> documentsRepository) {
+        this.documentsRepository = documentsRepository;
+    }
+
+    public void setContentExtractor(ContentExtractor contentExtractor) {
+        this.contentExtractor = contentExtractor;
+    }
+
+    private void logEndInit() {
+        if(classLogger.isDebugEnabled()) {
+            classLogger.debug("Init for servlet " + getServletName() + " ended successfully");
+        }
+    }
+
+    private void logStartInit() {
+        if(classLogger.isDebugEnabled()) {
+            classLogger.debug("Called init for servlet " + getServletName());
+        }
+    }
+
     private void logMethodEntry(String method, HttpServletRequest request) {
         if(classLogger.isDebugEnabled()) {
             classLogger.debug("Doing " + method + " for " + request.getRequestURI());
         }
-    }
-
-    private void replyNotFound(HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    }
-
-    private void replyNotAcceptable(HttpServletResponse resp) {
-        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 }

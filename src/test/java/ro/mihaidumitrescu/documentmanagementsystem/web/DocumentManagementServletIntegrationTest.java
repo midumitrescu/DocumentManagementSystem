@@ -16,8 +16,12 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static ro.mihaidumitrescu.application.ApplicationSettings.documentNameLength;
-import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.*;
+import static ro.mihaidumitrescu.application.ApplicationSettings.DOCUMENT_NAME__DEFAULT_LENGTH;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.mediumTestFile;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.smallTestFile;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile1;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile2;
+import static ro.mihaidumitrescu.documentmanagementsystem.AvailableFiles.testFile3;
 
 public class DocumentManagementServletIntegrationTest extends AbstractJettyBasedServletTest {
 
@@ -115,7 +119,7 @@ public class DocumentManagementServletIntegrationTest extends AbstractJettyBased
 
         String documentName = executor.findCreatedDocumentName(post);
         Assert.assertTrue("Document Name must be given as response body", StringUtils.hasText(documentName));
-        Assert.assertEquals("Document Name size must be " + documentNameLength, documentNameLength, documentName.length());
+        Assert.assertEquals("Document Name size must be " + DOCUMENT_NAME__DEFAULT_LENGTH, DOCUMENT_NAME__DEFAULT_LENGTH, documentName.length());
         assertDocumentContentEqualsTestFile("Saved content should match content from file " + testedFile, testedFile, documentName);
     }
 

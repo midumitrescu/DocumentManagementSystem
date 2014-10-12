@@ -3,7 +3,13 @@ package ro.mihaidumitrescu.documentmanagementsystem;
 import ro.mihaidumitrescu.documentmanagementsystem.exceptions.FileDoesNotExistException;
 import sun.misc.IOUtils;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 public class StreamingUtils {
     private final String testFolderPrefix = "src" + File.separator + "test" + File.separator + "resources";

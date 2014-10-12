@@ -4,11 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import ro.mihaidumitrescu.documentmanagementsystem.model.BinaryContent;
 import ro.mihaidumitrescu.documentmanagementsystem.model.Document;
 import ro.mihaidumitrescu.documentmanagementsystem.repository.Repository;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +20,9 @@ import java.io.PrintWriter;
 import java.util.ConcurrentModificationException;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementServletTest {
@@ -36,6 +41,8 @@ public class DocumentManagementServletTest {
     @Mock
     HttpServletResponse response;
     @Mock
+    ServletConfig config;
+    @Mock
     ServletInputStream servletInputStream;
     @Mock
     PrintWriter outputWriter;
@@ -43,8 +50,9 @@ public class DocumentManagementServletTest {
     private DocumentManagementServlet testTarget;
 
      @Before
-     public void prepare() throws IOException {
+     public void prepare() throws IOException, ServletException {
          testTarget = new DocumentManagementServlet();
+         testTarget.init(config);
 
          when(repository.exists("a")).thenReturn(true);
          when(repository.exists("b")).thenReturn(false);
@@ -56,7 +64,6 @@ public class DocumentManagementServletTest {
          when(repository.delete("b")).thenReturn(null);
 
          when(repository.create(binaryContent)).thenReturn(aDocument());
-
          when(contentExtractor.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
 
          when(response.getWriter()).thenReturn(outputWriter);
@@ -66,11 +73,6 @@ public class DocumentManagementServletTest {
 
     private Document aDocument() {
         return new Document("a", binaryContent);
-    }
-
-    @Test
-    public void testDoGet() throws Exception {
-
     }
 
     @Test
@@ -110,8 +112,6 @@ public class DocumentManagementServletTest {
         testTarget.doPut(request, response);
         verifyNotAllowed();
     }
-
-
 
     @Test
      public void testDoPut_B() throws Exception {

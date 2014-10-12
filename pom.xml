@@ -102,7 +102,7 @@
     </dependencies>
 
     <build>
-        <finalName>${artifactId}</finalName>
+        <finalName>MihaiDumitrescu</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
@@ -110,7 +110,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/</path>
-                    <warDirectory>${project.build.directory}/${artifactId}</warDirectory>
+                    <warDirectory>${project.build.directory}/${build.finalName}</warDirectory>
                     <uriEncoding>UTF-8</uriEncoding>
                     <port>8888</port>
                 </configuration>
