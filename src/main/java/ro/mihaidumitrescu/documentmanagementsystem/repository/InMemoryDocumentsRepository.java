@@ -7,10 +7,9 @@ import ro.mihaidumitrescu.documentmanagementsystem.model.Document;
 import ro.mihaidumitrescu.general.IdGenerator;
 import ro.mihaidumitrescu.general.StringUtils;
 
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum InMemoryDocumentsRepository implements Repository<Document> {
 
@@ -22,7 +21,7 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
     private final Map<String, Document> internalRepository = synchronizedHashMap();
 
     private Map<String, Document> synchronizedHashMap() {
-        return Collections.synchronizedMap(new HashMap<String, Document>(initialRepositoryCapacity));
+        return new ConcurrentHashMap<String, Document>(initialRepositoryCapacity);
     }
 
     @Override
