@@ -1,7 +1,5 @@
 package ro.mihaidumitrescu.documentmanagementsystem.model;
 
-import java.util.Date;
-
 public class Document {
     private final String name;
     private final Content content;
@@ -19,9 +17,6 @@ public class Document {
 
     public Content getContent() {
         return content;
-    }
-    public boolean exists() {
-        return true;
     }
 
     @Override
@@ -43,7 +38,8 @@ public class Document {
     public String toString() {
         return "Document{" +
                 "name='" + name + '\'' +
-                ", creationTime=" + new Date(creationTime) +
+                ", creationTime=" + creationTime +
+                ", content=" + content +
                 '}';
     }
 }

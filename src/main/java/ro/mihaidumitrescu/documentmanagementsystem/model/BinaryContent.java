@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class BinaryContent extends AbstractContent<byte[]> {
     private final static Logger classLogger = LoggerFactory.getLogger(BinaryContent.class);
@@ -39,5 +40,12 @@ public class BinaryContent extends AbstractContent<byte[]> {
 
     public BodyReader getBodyReader() {
         return bodyReader;
+    }
+
+    @Override
+    public String toString() {
+        return "BinaryContent{" +
+                "contentSize=" + content.length + " b" +
+                '}';
     }
 }

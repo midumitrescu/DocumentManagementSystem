@@ -1,5 +1,7 @@
 package ro.mihaidumitrescu.documentmanagementsystem.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.mihaidumitrescu.documentmanagementsystem.model.Content;
 import ro.mihaidumitrescu.documentmanagementsystem.model.Document;
 import ro.mihaidumitrescu.general.IdGenerator;
@@ -13,6 +15,8 @@ import java.util.Map;
 public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     INSTANCE;
+
+    private final static Logger classLogger = LoggerFactory.getLogger(InMemoryDocumentsRepository.class);
     public static final int initialRepositoryCapacity = 128;
 
     private final Map<String, Document> internalRepository = synchronizedHashMap();
@@ -29,7 +33,9 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
     @Override
     public Document create(Content content) {
         IdGenerator idGenerator = IdGenerator.INSTANCE;
-        return appendDocumentToRepository(content, idGenerator);
+        Document document = appendDocumentToRepository(content, idGenerator);
+        onRepositoryChange();
+        return document;
     }
 
     private Document appendDocumentToRepository(Content content, IdGenerator idGenerator) {
@@ -61,6 +67,8 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
             }
            internalRepository.put(item.getName(), item);
         }
+
+        onRepositoryChange();
     }
 
     @Override
@@ -78,6 +86,14 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
          if(!StringUtils.hasText(documentName)) {
              return null;
          }
-        return internalRepository.remove(documentName);
+        Document removed = internalRepository.remove(documentName);
+        onRepositoryChange();
+        return removed;
+    }
+
+    private void onRepositoryChange() {
+        if(classLogger.isDebugEnabled()) {
+            classLogger.debug("Repository Content " + internalRepository);
+        }
     }
 }

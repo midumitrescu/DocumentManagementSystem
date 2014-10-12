@@ -21,10 +21,6 @@ public class StringContent extends AbstractContent<String> {
         content = new String(bytes);
     }
 
-    public StringContent(String content) {
-        this.content = content;
-    }
-
     @Override
     public void writeContent(HttpServletResponse response) {
         try {
@@ -37,5 +33,12 @@ public class StringContent extends AbstractContent<String> {
     @Override
     protected InputStream getContent() {
         return  new ByteArrayInputStream(content.getBytes());
+    }
+
+    @Override
+    public String toString() {
+        return "StringContent{" +
+                "contentLength='" + content.length() + '\'' +
+                '}';
     }
 }
