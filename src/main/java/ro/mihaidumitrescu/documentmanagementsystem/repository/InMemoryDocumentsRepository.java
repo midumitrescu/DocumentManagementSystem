@@ -32,8 +32,6 @@ public enum InMemoryDocumentsRepository implements Repository<Document> {
         return appendDocumentToRepository(content, idGenerator);
     }
 
-
-
     private Document appendDocumentToRepository(Content content, IdGenerator idGenerator) {
         Document created;
         synchronized (internalRepository) {
