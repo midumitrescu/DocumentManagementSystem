@@ -18,8 +18,8 @@ public class UrlParser {
     }
 
     /**
-     * @return document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#STORAGE_PATH}/{documentName}.
-     * Empty string if context path does not coincide
+     * Returns document name from a link like {@link ro.mihaidumitrescu.documentmanagementsystem.web.UrlParser#STORAGE_PATH}/{documentName}.
+     * Empty string if context path does not coincide.
      */
     public String findDocumentNamePathParameter(String requestURL) {
         if (!StringUtils.hasText(requestURL)) {
