@@ -31,14 +31,12 @@ public enum IdGenerator {
          return nextId(ApplicationSettings.documentNameLength);
     }
 
-    public String next(Collection<String> toBeAvoided) {
-
+    public String nextFreeRandom(Collection<String> toBeAvoided) {
         String candidateString = next();
         while (toBeAvoided.contains(candidateString)) {
             //refresh value
             candidateString = next();
         }
-
         return candidateString;
     }
 

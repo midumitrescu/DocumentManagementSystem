@@ -1,11 +1,9 @@
 package ro.mihaidumitrescu.documentmanagementsystem.model;
 
-/**
- * Created by Mihai Dumitrescu on 12.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
-public interface Content<T> {
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-    T getContent();
+public interface Content<T> {
+    void writeContent(HttpServletResponse response);
 }

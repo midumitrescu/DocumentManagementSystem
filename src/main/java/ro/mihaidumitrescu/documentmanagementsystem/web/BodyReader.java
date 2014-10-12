@@ -2,15 +2,11 @@ package ro.mihaidumitrescu.documentmanagementsystem.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.IOUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-/**
- * Created by Mihai Dumitrescu on 11.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
 public class BodyReader {
 
     private final static Logger classLogger = LoggerFactory.getLogger(DocumentManagementServlet.class);
@@ -22,10 +18,10 @@ public class BodyReader {
     }
 
     public byte[] readAllContent() {
-        byte[] result = new byte[readFrom.getContentLength()];
+        byte[] result;
         try {
-            int bytesRead = readFrom.getInputStream().read(result);
-            logReadContent(bytesRead);
+            result = IOUtils.readFully(readFrom.getInputStream(), Integer.MAX_VALUE, true);
+            logReadContent(result.length);
             return result;
         } catch (IOException e) {
 

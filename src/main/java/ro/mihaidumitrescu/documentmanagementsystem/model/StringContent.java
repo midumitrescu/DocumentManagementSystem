@@ -1,20 +1,41 @@
 package ro.mihaidumitrescu.documentmanagementsystem.model;
 
-/**
- * Created by Mihai Dumitrescu on 12.10.2014.
- *
- * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
- */
-public class StringContent implements Content<String> {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ro.mihaidumitrescu.documentmanagementsystem.exceptions.WriteExceptionHandler;
+import ro.mihaidumitrescu.documentmanagementsystem.web.BodyReader;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class StringContent extends AbstractContent<String> {
+    private final static Logger classLogger = LoggerFactory.getLogger(StringContent.class);
 
     private final String content;
+
+    public StringContent(HttpServletRequest requestInfo) {
+        byte[] bytes = new BodyReader(requestInfo).readAllContent();
+        content = new String(bytes);
+    }
 
     public StringContent(String content) {
         this.content = content;
     }
 
     @Override
-    public String getContent() {
-        return content;
+    public void writeContent(HttpServletResponse response) {
+        try {
+            response.getWriter().write(content);
+        } catch (IOException e) {
+             new WriteExceptionHandler(e).handle(classLogger);
+        }
+    }
+
+    @Override
+    protected InputStream getContent() {
+        return  new ByteArrayInputStream(content.getBytes());
     }
 }

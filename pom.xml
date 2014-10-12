@@ -20,7 +20,7 @@
     <properties>
         <java.version>1.7</java.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <jetty.version>9.2.3.v20140905</jetty.version>
+        <jetty.version>9.0.3.v20130506</jetty.version>
     </properties>
 
     <dependencies>
@@ -75,6 +75,13 @@
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>2.13</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
 

@@ -2,47 +2,183 @@ package ro.mihaidumitrescu.documentmanagementsystem.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.mihaidumitrescu.documentmanagementsystem.model.BinaryContent;
 import ro.mihaidumitrescu.documentmanagementsystem.model.Content;
 import ro.mihaidumitrescu.documentmanagementsystem.model.Document;
-import ro.mihaidumitrescu.documentmanagementsystem.repository.DocumentsRepository;
+import ro.mihaidumitrescu.documentmanagementsystem.repository.InMemoryDocumentsRepository;
+import ro.mihaidumitrescu.documentmanagementsystem.repository.Repository;
+import ro.mihaidumitrescu.general.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.UUID;
 
 public class DocumentManagementServlet extends HttpServlet {
-
     private final static Logger classLogger = LoggerFactory.getLogger(DocumentManagementServlet.class);
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private UrlParser parser;
+    private Repository<Document> documentsRepository;
+    private ContentCreator contentCreator;
 
-        resp.getWriter().write("Hello World!");
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        initDependencies();
+        logMethodEntry("GET", request);
+
+        String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
+        if(emptyDocumentName(response, documentName)) {
+            return;
+        }
+
+        Document document = documentsRepository.read(documentName);
+        if(document == null) {
+            replyNotFound(response);
+        } else {
+            document.getContent().writeContent(response);
+            replyOK(response);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        initDependencies();
+        logMethodEntry("POST", request);
+        if(parser.hasDeepPath(request.getRequestURI())) {
+            replyNotAcceptable(response);
+            return;
+        }
+        Document newDocument = createNewDocument(request);
+
+        replyCreated(response);
+        response.setCharacterEncoding("us-ascii");
+        response.setContentType(SupportedMediaTypes.Text.produces());
+        response.getWriter().write(newDocument.getName());
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        initDependencies();
+        logMethodEntry("DELETE", request);
+
+        String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
+        if(emptyDocumentName(response, documentName)) {
+            return;
+        }
+
+        Document document = documentsRepository.delete(documentName);
+        if(document == null) {
+            replyNotFound(response);
+        } else {
+            replyNoContent(response);
+            replyOK(response);
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        initDependencies();
+        logMethodEntry("PUT", request);
+
+        String documentName = parser.findDocumentNamePathParameter(request.getRequestURI());
+        if(emptyDocumentName(response, documentName)) {
+            return;
+        }
+
+        Document document = documentsRepository.read(documentName);
+        if(!documentsRepository.exists(documentName)) {
+            replyNotFound(response);
+        } else {
+            try {
+                Content<?> updatedContent = extractContent(request);
+                Document updated = new Document(document.getName(), updatedContent);
+                documentsRepository.update(updated);
+                replyNoContent(response);
+            } catch (ConcurrentModificationException e) {
+                replyNotFound(response);
+            }
+        }
+    }
+
+    private void replyOK(HttpServletResponse resp) {
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest servletRequest, HttpServletResponse resp) throws ServletException, IOException {
-        if(new UrlParser().hasDeepPath(servletRequest.getRequestURI())) {
-            resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-        }
-        Document newDocument = createNewDocument(servletRequest);
-
+    private void replyCreated(HttpServletResponse resp) {
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setCharacterEncoding("us-ascii");
-        resp.setContentType(SupportedMediaTypes.Text.produces());
-        resp.getWriter().write(newDocument.getName());
+    }
+
+    private void replyNoContent(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
     private Document createNewDocument(HttpServletRequest servletRequest) {
-        String newDocumentName = UUID.randomUUID().toString();
-        byte[] requestContent = new BodyReader(servletRequest).readAllContent();
-        Content<?> content = new BinaryContent(requestContent);
-        Document newlyCreatedDocument = DocumentsRepository.INSTANCE.createDocument(content);
+        Content<?> content = extractContent(servletRequest);
+        Document newlyCreatedDocument = documentsRepository.create(content);
         return newlyCreatedDocument;
+    }
+
+    protected Content extractContent(HttpServletRequest servletRequest) {
+        return contentCreator.extract(servletRequest);
+    }
+
+    private void initDependencies() {
+        initParser();
+        initDocumentRepository();
+        initContentCreator();
+    }
+
+    private void initDocumentRepository() {
+        if(documentsRepository == null) {
+            setDocumentsRepository(InMemoryDocumentsRepository.INSTANCE);
+        }
+    }
+
+    private void initContentCreator() {
+        if(contentCreator == null) {
+            setContentCreator(new RequestBasedContentCreator());
+        }
+    }
+
+    private void initParser() {
+        if (this.parser == null) {
+            setParser(new UrlParser());
+        }
+    }
+
+    public void setDocumentsRepository(Repository documentsRepository) {
+        this.documentsRepository = documentsRepository;
+    }
+
+    public void setParser(UrlParser parser) {
+        this.parser = parser;
+    }
+
+    public void setContentCreator(ContentCreator contentCreator) {
+        this.contentCreator = contentCreator;
+    }
+
+    private boolean emptyDocumentName(HttpServletResponse response, String documentName) {
+        if(!StringUtils.hasText(documentName)) {
+            replyNotAcceptable(response);
+            return true;
+        }
+        return false;
+    }
+
+    private void logMethodEntry(String method, HttpServletRequest request) {
+        if(classLogger.isDebugEnabled()) {
+            classLogger.debug("Doing " + method + " for " + request.getRequestURI());
+        }
+    }
+
+    private void replyNotFound(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    private void replyNotAcceptable(HttpServletResponse resp) {
+        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 }

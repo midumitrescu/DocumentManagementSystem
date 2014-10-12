@@ -1,105 +1,174 @@
 package ro.mihaidumitrescu.documentmanagementsystem.web;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ro.mihaidumitrescu.application.ApplicationSettings;
-import ro.mihaidumitrescu.documentmanagementsystem.FileSystemUtils;
-import ro.mihaidumitrescu.general.StringUtils;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import ro.mihaidumitrescu.documentmanagementsystem.model.BinaryContent;
+import ro.mihaidumitrescu.documentmanagementsystem.model.Document;
+import ro.mihaidumitrescu.documentmanagementsystem.repository.Repository;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.InputStream;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ConcurrentModificationException;
 
-import static ro.mihaidumitrescu.application.ApplicationSettings.documentNameLength;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
-public class DocumentManagementServletTest extends AbstractJettyBasedServletTest<DocumentManagementServlet> {
-    private final static Logger classLogger = LoggerFactory.getLogger(DocumentManagementServletTest.class);
-    public static final String localhost = "http://localhost:";
+@RunWith(MockitoJUnitRunner.class)
+public class DocumentManagementServletTest {
 
-    private static Client client;
-    private static WebTarget defaultTarget;
+    @Mock
+    Repository<Document> repository;
+    @Mock
+    BinaryContent binaryContent;
+    @Mock
+    BodyReader bodyReader;
+    @Mock
+    ContentCreator contentCreator;
 
-    @BeforeClass
-    public static void startJetty() {
-        client = ClientBuilder.newClient();
-        defaultTarget = client.target(localAppUrl());
-    }
+    @Mock
+    HttpServletRequest request;
+    @Mock
+    HttpServletResponse response;
+    @Mock
+    ServletInputStream servletInputStream;
+    @Mock
+    PrintWriter outputWriter;
 
-    @AfterClass
-    public static void releaseJaxrsClient() {
-        try {
-            if(client == null) {
-                classLogger.warn("Close jaxrs client was called, but server was already null");
-            } else {
-                client.close();
-                classLogger.info("Closed jax rs client");
-            }
-        } catch (Exception e) {
-            classLogger.error("Error while closing jaxrs client", e);
-        }
-    }
+    private DocumentManagementServlet testTarget;
 
-    @Override
-    protected Class<DocumentManagementServlet> getTestedServlet() {
-        return DocumentManagementServlet.class;
-    }
+     @Before
+     public void prepare() throws IOException {
+         testTarget = new DocumentManagementServlet();
 
-    private static void closeClient() {
-        try {
-            if (client == null) {
-                classLogger.warn("Close jax-rs client was called, but it was already null");
-            } else {
-                client.close();
-                classLogger.warn("Closed jax-rs client ");
-            }
-        } catch (Exception e) {
-            classLogger.error("Error while jax-rs client", e);
-        }
-    }
+         when(repository.exists("a")).thenReturn(true);
+         when(repository.exists("b")).thenReturn(false);
 
-    @Test
-    public void testDoGet() {
-        Response response = defaultTarget.path(UrlParser.storagePath).request(MediaType.TEXT_PLAIN).get();
-        Assert.assertEquals("Should be successful!", 200, response.getStatus());
-        String helloWorld = response.readEntity(String.class);
-        Assert.assertEquals("Hello World!", helloWorld);
+         when(repository.read("a")).thenReturn(aDocument());
+         when(repository.read("b")).thenReturn(null);
+
+         when(repository.delete("a")).thenReturn(aDocument());
+         when(repository.delete("b")).thenReturn(null);
+
+         when(repository.create(binaryContent)).thenReturn(aDocument());
+
+         when(contentCreator.extract(any(HttpServletRequest.class))).thenReturn(binaryContent);
+
+         when(response.getWriter()).thenReturn(outputWriter);
+         testTarget.setDocumentsRepository(repository);
+         testTarget.setContentCreator(contentCreator);
+     }
+
+    private Document aDocument() {
+        return new Document("a", binaryContent);
     }
 
     @Test
-    public void testCreateDocument_Successfully() {
-        InputStream testFile1 = new FileSystemUtils().inputStreamForFile("testFile1.txt");
+    public void testDoGet() throws Exception {
 
-        Response post = defaultTarget.path(UrlParser.storagePath).request(MediaType.APPLICATION_OCTET_STREAM).post(Entity.entity(testFile1, MediaType.APPLICATION_OCTET_STREAM_TYPE));
-        Assert.assertEquals("Status should be crated", 201, post.getStatus());
-
-        String documentName = post.readEntity(String.class);
-        Assert.assertTrue("Document Name must be given as response body", StringUtils.hasText(documentName));
-        Assert.assertEquals("Document Name size must be " + documentNameLength, documentNameLength, documentName.length());
     }
 
     @Test
-    public void testPostMapping_UnexpectedAtoms() {
-        InputStream testFile1 = new FileSystemUtils().inputStreamForFile("testFile1.txt");
-
-        Response post = defaultTarget.path(UrlParser.storagePath).path("somethingExtra").request(MediaType.APPLICATION_OCTET_STREAM).post(Entity.entity(testFile1, MediaType.APPLICATION_OCTET_STREAM_TYPE));
-        Assert.assertEquals("Besides servlet configured storage path, post should not be accepted", 405, post.getStatus());
+    public void testDoPost_Acceptable() throws Exception {
+        mockCallOn("/");
+        testTarget.doPost(request, response);
+        verify(repository).create(binaryContent);
+        verify(outputWriter).write(aDocument().getName());
+        verifyCreated();
     }
 
     @Test
-    public void test404WhenDocumentDoesNotExist() {
-        Response response = defaultTarget.path("aDocumentName").request(MediaType.TEXT_PLAIN).get();
-        Assert.assertEquals("Document does not exist", 404, response.getStatus());
+    public void testDoPost_DeepPathPresent() throws Exception {
+        mockCallOnA();
+        testTarget.doPost(request, response);
+        verifyNotAllowed();
     }
 
-    private static String localAppUrl() {
-        return localhost + AbstractJettyBasedServletTest.jettyRunningPort;
+    @Test
+     public void testDoDelete_A() throws Exception {
+        mockCallOnA();
+        testTarget.doDelete(request, response);
+        verify(repository).delete("a");
+        verifyNoContent();
+    }
+
+    @Test
+    public void testDoDelete_B() throws Exception {
+        mockCallOnB();
+        testTarget.doDelete(request, response);
+        verifyNotFound();
+    }
+
+    @Test
+    public void testDoPut_empty() throws Exception {
+        mockCallOn(UrlParser.storagePath);
+        testTarget.doPut(request, response);
+        verifyNotAllowed();
+    }
+
+
+
+    @Test
+     public void testDoPut_B() throws Exception {
+        mockCallOnB();
+        testTarget.doPut(request, response);
+        verifyNotFound();
+    }
+
+    @Test
+    public void testDoPut_ConcurrencyProblem() throws Exception {
+        mockCallOnC();
+        doThrow(new ConcurrentModificationException()).when(repository).update(any(Document.class));
+        testTarget.doPut(request, response);
+        verifyNotFound();
+    }
+
+    @Test
+    public void testDoPut_A() throws Exception {
+        mockCallOnA();
+        testTarget.doPut(request, response);
+        verify(repository).update(aDocument());
+        verifyNoContent();
+    }
+
+    private void mockCallOnA() {
+        mockCallOn("/a");
+    }
+
+    private void mockCallOnB() {
+        mockCallOn("/b");
+    }
+
+    private void mockCallOnC() {
+        mockCallOn("/c");
+    }
+
+    private void mockCallOn(String value) {
+        when(request.getRequestURI()).thenReturn(value);
+    }
+
+    private void verifyCreated() {
+        verifyStatus(HttpServletResponse.SC_CREATED);
+    }
+
+    private void verifyNoContent() {
+        verifyStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    private void verifyNotAllowed() {
+        verifyStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+    }
+
+    private void verifyNotFound() {
+        verifyStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    private void verifyStatus(int scNotFound) {
+        verify(response).setStatus(scNotFound);
     }
 }

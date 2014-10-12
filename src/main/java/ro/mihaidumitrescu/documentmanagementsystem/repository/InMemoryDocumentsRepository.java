@@ -6,6 +6,7 @@ import ro.mihaidumitrescu.general.IdGenerator;
 import ro.mihaidumitrescu.general.StringUtils;
 
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:dumitrescu.mihai2002@yahoo.com">Mihai Dumitrescu</a>
  */
-public enum DocumentsRepository implements Repository<Document> {
+public enum InMemoryDocumentsRepository implements Repository<Document> {
 
     INSTANCE;
     public static final int initialRepositoryCapacity = 128;
@@ -31,18 +32,17 @@ public enum DocumentsRepository implements Repository<Document> {
     }
 
     @Override
-    public Document createDocument(Content content) {
+    public Document create(Content content) {
         IdGenerator idGenerator = IdGenerator.INSTANCE;
-        Document created;
-
-        created = appendDocumentToRepository(content, idGenerator);
-        return created;
+        return appendDocumentToRepository(content, idGenerator);
     }
+
+
 
     private Document appendDocumentToRepository(Content content, IdGenerator idGenerator) {
         Document created;
         synchronized (internalRepository) {
-            String documentId = idGenerator.next(internalRepository.keySet());
+            String documentId = idGenerator.nextFreeRandom(internalRepository.keySet());
             created = new Document(documentId, content);
             internalRepository.put(documentId, created);
         }
@@ -50,11 +50,24 @@ public enum DocumentsRepository implements Repository<Document> {
     }
 
     @Override
-    public void delete(Document item) {
+    public Document delete(Document item) {
+        if(item == null) {
+            return null;
+        }
+        return delete(item.getName());
+    }
+
+    @Override
+    public void update(Document item) {
         if(item == null) {
             return;
         }
-        delete(item.getName());
+        synchronized (item.getName()) {
+            if(!exists(item)) {
+                throw new ConcurrentModificationException("Document " + item + " cannot be updated, as it was deleted previously");
+            }
+           internalRepository.put(item.getName(), item);
+        }
     }
 
     @Override
@@ -68,10 +81,10 @@ public enum DocumentsRepository implements Repository<Document> {
     }
 
     @Override
-    public void delete(String documentName) {
+    public Document delete(String documentName) {
          if(!StringUtils.hasText(documentName)) {
-             return;
+             return null;
          }
-        internalRepository.remove(documentName);
+        return internalRepository.remove(documentName);
     }
 }

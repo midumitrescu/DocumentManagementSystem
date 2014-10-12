@@ -38,7 +38,7 @@ public abstract class AbstractJettyBasedServletTest<T extends Servlet> {
         servletHolder.setInitParameter(ApplicationModes.configurationParameterName, ApplicationModes.TEST.name());
         servletHolder.setInitOrder(0);
         servletHolder.setEnabled(true);
-        context.addServlet(servletHolder, UrlParser.storagePath);
+        context.addServlet(servletHolder, UrlParser.storagePath + "/*");
         server.setHandler(context);
 
         try {

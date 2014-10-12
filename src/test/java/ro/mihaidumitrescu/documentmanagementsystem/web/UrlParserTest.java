@@ -3,8 +3,6 @@ package ro.mihaidumitrescu.documentmanagementsystem.web;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class UrlParserTest {
 
     private final UrlParser urlParser = new UrlParser();
@@ -52,5 +50,56 @@ public class UrlParserTest {
     @Test
     public void testHasDeepPath_WithSlash() {
         Assert.assertFalse(urlParser.hasDeepPath(UrlParser.storagePath + "/"));
+    }
+
+    @Test
+     public void testFindDocumentNamePathParameter_emptyLink() {
+        Assert.assertEquals("Empty link", "", urlParser.findDocumentNamePathParameter(""));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_slash() {
+        Assert.assertEquals("Empty link", "",  urlParser.findDocumentNamePathParameter("/"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_invalidPath_1() {
+        Assert.assertEquals("Invalid path does not detect name", "",  urlParser.findDocumentNamePathParameter("/some/stupid/name"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_invalidPath_2() {
+        Assert.assertEquals("Invalid path does not detect name", "",  urlParser.findDocumentNamePathParameter("/some/bigger/stupid/name"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_configuredOnFullPath() {
+        Assert.assertEquals("When configured at root (i.e. mapping URL does not get copied), first atom is documentName", "someName",  urlParser.findDocumentNamePathParameter("someName"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_configuredOnFullPathWithSlash() {
+        Assert.assertEquals("When configured at root (i.e. mapping URL does not get copied), first atom is documentName", "someName",  urlParser.findDocumentNamePathParameter("/someName"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_configuredOnFullPathWithSlashAtEnd() {
+        Assert.assertEquals("When configured at root (i.e. mapping URL does not get copied), first atom is documentName", "someName",  urlParser.findDocumentNamePathParameter("someName/"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_configuredOnFullPathWithSlashAtBeginningAndEnd() {
+        Assert.assertEquals("When configured at root (i.e. mapping URL does not get copied), first atom is documentName", "someName",  urlParser.findDocumentNamePathParameter("/someName/"));
+    }
+
+    @Test
+    public void testFindDocumentNamePathParameter_fullPath() {
+        Assert.assertEquals("Full path ed documentName", "someName",  urlParser.findDocumentNamePathParameter(UrlParser.storagePath + "/someName"));
+    }
+
+
+    @Test
+    public void testFindDocumentNamePathParameter_fullPathWithSlashAtEnd() {
+        Assert.assertEquals("Full path ed documentName", "someName",  urlParser.findDocumentNamePathParameter(UrlParser.storagePath + "/someName/"));
     }
 }
