@@ -1,7 +1,8 @@
 DocumentManagementSystem
 ========================
 
-Made for Citrix, by Mihai Dumitrescu **mihaidumitrescujee at gmail _pun_kt_ com**
+This is a simple File/Document Management system based only on javax.servlet technology. 
+
 
 Run application by simply:
 
